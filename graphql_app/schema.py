@@ -1,4 +1,4 @@
-from graphene import Field, Int, List, Mutation, ObjectType, Schema, String
+import graphene
 from graphene_django import DjangoObjectType
 
 from contacts.models import Contact
@@ -11,10 +11,10 @@ class ContactType(DjangoObjectType):
         field = ("id", "name", "phone_number")
 
 
-class Query(ObjectType):
+class Query(graphene.ObjectType):
     # Query ContactType to get list of contacts
-    list_contact = List(ContactType)
-    read_contact = Field(ContactType, id=Int())
+    list_contact = graphene.List(ContactType)
+    read_contact = graphene.Field(ContactType, id=graphene.Int())
 
     @staticmethod
     def resolve_list_contact(root, info):
@@ -27,13 +27,15 @@ class Query(ObjectType):
         return Contact.objects.get(id=id)
 
 
-class ContactMutation(Mutation):
+class ContactMutation(graphene.Mutation):
     class Arguments:
         # Add fields you would like to create. This will corelate with the ContactType fields above.
-        name = String()
-        phone_number = String()
+        name = graphene.String()
+        phone_number = graphene.String()
 
-    contact = Field(ContactType)  # Define the class we are getting the fields from
+    contact = graphene.Field(
+        ContactType
+    )  # Define the class we are getting the fields from
 
     @classmethod
     def mutate(cls, root, info, name, phone_number):
@@ -43,9 +45,9 @@ class ContactMutation(Mutation):
         return ContactMutation(contact=contact)
 
 
-class Mutation(ObjectType):
+class Mutation(graphene.ObjectType):
     # Keywords that will be used to do the mutation in the frontend
     create_contact = ContactMutation.Field()
 
 
-schema = Schema(query=Query, mutation=Mutation)
+schema = graphene.Schema(query=Query, mutation=Mutation)
