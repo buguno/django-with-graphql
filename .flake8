@@ -9,7 +9,8 @@ exclude =
     docs/source/conf.py,
     old,
     build,
-    dist
+    dist,
+    */migrations/*.py
 per-file-ignores =
     # imported but unused
     __init__.py: F401
